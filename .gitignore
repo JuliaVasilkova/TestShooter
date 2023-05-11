@@ -1,0 +1,15 @@
+
+# UE
+Content/StarterContent/
+Saved/
+Intermediate/
+Binaries/
+DerivedDataCache/*
+
+# Builds
+Build/*
+
+# Visual Studio
+.vs/
+.vsconfig
+
