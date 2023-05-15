@@ -8,12 +8,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Item.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATestShooterCharacter
 
 ATestShooterCharacter::ATestShooterCharacter()
 {
+	Tags.Add("Character");
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -47,6 +51,14 @@ ATestShooterCharacter::ATestShooterCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
+// Called when the game starts or when spawned
+void ATestShooterCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATestShooterCharacter::OnCharacterBeginOverlap);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -74,6 +86,19 @@ void ATestShooterCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATestShooterCharacter::OnResetVR);
+}
+
+void ATestShooterCharacter::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnCharacterBeginOverlap"));
+	if (OtherActor && this != OtherActor && Cast<AItem>(OtherActor) != nullptr)
+	{
+		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
+
+		AItem* Item = Cast<AItem>(OtherActor);
+
+		Item->AttachToComponent(GetMesh(), AttachRules, TEXT("hand_weapon_s"));
+	}
 }
 
 
