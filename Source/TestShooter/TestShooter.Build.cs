@@ -8,6 +8,11 @@ public class TestShooter : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		//Default setup
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
-	}
+
+		//AI modules
+        PublicDependencyModuleNames.AddRange(new string[] { "AIModule" });
+
+    }
 }
