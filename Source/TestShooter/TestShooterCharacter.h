@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+class AItem;
+
 #include "TestShooterCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -28,6 +31,27 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	/** Health param to track damage. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=CharacterProperties)
+	float Health;
+
+	/** Health param to implement progress bar. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterProperties)
+	float MaxHealth;
+
+	/** Health param to implement progress bar. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterProperties)
+	bool IsDead = false;
+
+	/** Health param to implement progress bar. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterProperties)
+	bool HasWeapon = false;
+
+	/** Item attached to hand as weapon to shoot to enemy */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterProperties)
+	AItem* AttachedItem = nullptr;
+
 
 protected:
 

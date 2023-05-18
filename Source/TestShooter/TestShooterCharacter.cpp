@@ -18,6 +18,9 @@ ATestShooterCharacter::ATestShooterCharacter()
 {
 	Tags.Add("Character");
 
+	MaxHealth = 100;
+	Health = MaxHealth;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -95,9 +98,9 @@ void ATestShooterCharacter::OnCharacterBeginOverlap(UPrimitiveComponent* Overlap
 	{
 		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
 
-		AItem* Item = Cast<AItem>(OtherActor);
-
-		Item->AttachToComponent(GetMesh(), AttachRules, TEXT("hand_weapon_s"));
+		AttachedItem = Cast<AItem>(OtherActor);
+		AttachedItem->AttachToComponent(GetMesh(), AttachRules, TEXT("hand_weapon_s"));
+		HasWeapon = true;
 	}
 }
 
