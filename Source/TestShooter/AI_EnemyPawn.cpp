@@ -4,11 +4,16 @@
 #include "AI_EnemyPawn.h"
 #include "Perception/PawnSensingComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "TestShooterCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "NavigationSystem.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "AIController.h"
+#include "AITypes.h"
 
 // Sets default values
 AAI_EnemyPawn::AAI_EnemyPawn()
 {
-	Tags.Add(TEXT("Enemy"));
 
 	MoveComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MoveComponent"));
 	MoveComponent->MaxSpeed = 100.f;
@@ -26,20 +31,42 @@ AAI_EnemyPawn::AAI_EnemyPawn()
 void AAI_EnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Tags.Add(FName("Enemy"));
+
+	if (SensComponent)
+	{
+		SensComponent->OnSeePawn.AddDynamic(this, &AAI_EnemyPawn::OnEnemySeePawn);
+	}
+
+	NavArea = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
+	EnemyAIController = Cast<AAIController>(GetController());
 }
 
 // Called every frame
 void AAI_EnemyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-// Called to bind functionality to input
-void AAI_EnemyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+/** AI Delegate to find player and move to him as simple implementation of simple AI enemy logic*/
+void AAI_EnemyPawn::OnEnemySeePawn(APawn* Pawn)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (!IsDead && Cast<ATestShooterCharacter>(Pawn) != nullptr)
+	{
+		EnemyAIController->MoveToActor(Pawn);
+		ATestShooterCharacter* PlayerPawn = Cast<ATestShooterCharacter>(Pawn);
 
+	}
 }
 
+void AAI_EnemyPawn::RandomPatrol()
+{
+	if (NavArea)
+	{
+		NavArea->K2_GetRandomReachablePointInRadius(GetWorld(), GetActorLocation(), RandomLocation, 15000.0f);
+		
+		EnemyAIController = Cast<AAIController>(GetController());
+		EnemyAIController->MoveToLocation(RandomLocation);
+	}
+}

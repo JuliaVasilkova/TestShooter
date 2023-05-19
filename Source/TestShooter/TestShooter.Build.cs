@@ -12,7 +12,7 @@ public class TestShooter : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
 
 		//AI modules
-        PublicDependencyModuleNames.AddRange(new string[] { "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] { "AIModule", "NavigationSystem" });
 
     }
 }

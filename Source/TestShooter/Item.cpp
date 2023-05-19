@@ -3,6 +3,7 @@
 #include "Item.h"
 
 #include "Components/SphereComponent.h"
+#include "BulletActor.h"
 
 // Sets default values
 AItem::AItem()
@@ -21,6 +22,15 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void AItem::Shoot(APawn* TargetActor)
+{
+	if (BulletActorToSpawn)
+	{
+		ABulletActor* Bullet = GetWorld()->SpawnActor<ABulletActor>(BulletActorToSpawn, GetActorTransform());
+
+	}
 }
 
 // Called every frame

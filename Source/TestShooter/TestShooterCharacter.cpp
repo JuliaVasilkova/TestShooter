@@ -16,7 +16,6 @@
 
 ATestShooterCharacter::ATestShooterCharacter()
 {
-	Tags.Add("Character");
 
 	MaxHealth = 100;
 	Health = MaxHealth;
@@ -59,6 +58,8 @@ void ATestShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Tags.Add(FName("Character"));
+
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATestShooterCharacter::OnCharacterBeginOverlap);
 }
 
@@ -98,6 +99,7 @@ void ATestShooterCharacter::OnCharacterBeginOverlap(UPrimitiveComponent* Overlap
 	{
 		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
 
+		//Init of just grubbed weapon
 		AttachedItem = Cast<AItem>(OtherActor);
 		AttachedItem->AttachToComponent(GetMesh(), AttachRules, TEXT("hand_weapon_s"));
 		HasWeapon = true;

@@ -22,10 +22,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
+	void Shoot(APawn* TargetActor);
+
 public:
 
 	/** Collision component of item */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
 	class USphereComponent* CollisionComponent;
+
+
+	/** Collision component of item */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
+	TSubclassOf<class ABulletActor> BulletActorToSpawn;
 
 };
