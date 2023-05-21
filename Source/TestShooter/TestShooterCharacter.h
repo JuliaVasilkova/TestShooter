@@ -100,5 +100,9 @@ public:
 	//Overlap begin delegate
 	UFUNCTION(BlueprintCallable)
 	virtual void OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	//TakeDamage logic for character
+	UFUNCTION(BlueprintCallable)
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
 

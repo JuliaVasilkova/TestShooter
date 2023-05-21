@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FloatingPawnMovement)
 	UFloatingPawnMovement* MoveComponent;
 
-	/** Maximum velocity magnitude allowed for the controlled Pawn. */
+	/** SensComponent to look for Player character */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PawnSensingComponen)
 	UPawnSensingComponent* SensComponent;
 
@@ -63,6 +63,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnEnemySeePawn(APawn* Pawn);
 
+	UFUNCTION(BlueprintCallable)
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	// Moves enemy to random location destination
+	UFUNCTION(BlueprintCallable)
 	void RandomPatrol();
 };

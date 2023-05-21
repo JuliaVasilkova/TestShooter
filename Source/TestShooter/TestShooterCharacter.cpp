@@ -9,6 +9,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Item.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -17,7 +19,7 @@
 ATestShooterCharacter::ATestShooterCharacter()
 {
 
-	MaxHealth = 100;
+	MaxHealth = 50;
 	Health = MaxHealth;
 
 	// Set size for collision capsule
@@ -104,6 +106,19 @@ void ATestShooterCharacter::OnCharacterBeginOverlap(UPrimitiveComponent* Overlap
 		AttachedItem->AttachToComponent(GetMesh(), AttachRules, TEXT("hand_weapon_s"));
 		HasWeapon = true;
 	}
+}
+
+float ATestShooterCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health -= Damage;
+
+	if (Health <= 0)
+	{
+		IsDead = true;
+		UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, true);
+	}
+
+	return Damage;
 }
 
 

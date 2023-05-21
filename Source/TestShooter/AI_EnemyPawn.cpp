@@ -4,6 +4,7 @@
 #include "AI_EnemyPawn.h"
 #include "Perception/PawnSensingComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/Actor.h"
 #include "TestShooterCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
@@ -54,10 +55,26 @@ void AAI_EnemyPawn::OnEnemySeePawn(APawn* Pawn)
 {
 	if (!IsDead && Cast<ATestShooterCharacter>(Pawn) != nullptr)
 	{
-		EnemyAIController->MoveToActor(Pawn);
-		ATestShooterCharacter* PlayerPawn = Cast<ATestShooterCharacter>(Pawn);
-
+		EPathFollowingRequestResult::Type Result = EnemyAIController->MoveToActor(Pawn, 50.f, true);
+		if (Result == EPathFollowingRequestResult::AlreadyAtGoal)
+		{
+			ATestShooterCharacter* PlayerPawn = Cast<ATestShooterCharacter>(Pawn);
+			UGameplayStatics::ApplyDamage(PlayerPawn, 10.f, PlayerPawn->GetController(), this, UDamageType::StaticClass());
+		}
 	}
+}
+
+float AAI_EnemyPawn::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health -= Damage;
+
+	if (Health <= 0)
+	{
+		IsDead = true;
+		this->Destroy();
+	}
+
+	return Damage;
 }
 
 void AAI_EnemyPawn::RandomPatrol()
@@ -65,8 +82,6 @@ void AAI_EnemyPawn::RandomPatrol()
 	if (NavArea)
 	{
 		NavArea->K2_GetRandomReachablePointInRadius(GetWorld(), GetActorLocation(), RandomLocation, 15000.0f);
-		
-		EnemyAIController = Cast<AAIController>(GetController());
 		EnemyAIController->MoveToLocation(RandomLocation);
 	}
 }
