@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
-class AItem;
+class AWeaponItem;
 
 #include "TestShooterCharacter.generated.h"
 
@@ -50,13 +50,10 @@ public:
 
 	/** Item attached to hand as weapon to shoot to enemy */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterProperties)
-	AItem* AttachedItem = nullptr;
+	AWeaponItem* AttachedItem = nullptr;
 
 
 protected:
-
-	/** Resets HMD orientation in VR. */
-	void OnResetVR();
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -105,4 +102,3 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
-

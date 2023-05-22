@@ -4,7 +4,7 @@
 #include "BulletActor.h"
 
 #include "AI_EnemyPawn.h"
-#include "Item.h"
+#include "WeaponItem.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"

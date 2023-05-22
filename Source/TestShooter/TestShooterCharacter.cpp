@@ -9,9 +9,10 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Item.h"
+#include "WeaponItem.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATestShooterCharacter
@@ -89,21 +90,35 @@ void ATestShooterCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATestShooterCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATestShooterCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATestShooterCharacter::OnResetVR);
 }
 
+// Logic for weapon pick up while overlapping with it
 void ATestShooterCharacter::OnCharacterBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnCharacterBeginOverlap"));
-	if (OtherActor && this != OtherActor && Cast<AItem>(OtherActor) != nullptr)
+	if (OtherActor && this != OtherActor && AttachedItem != OtherActor && Cast<AWeaponItem>(OtherActor) != nullptr)
 	{
-		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
 
-		//Init of just grubbed weapon
-		AttachedItem = Cast<AItem>(OtherActor);
-		AttachedItem->AttachToComponent(GetMesh(), AttachRules, TEXT("hand_weapon_s"));
+		//Detach if some weapon is in hands
+		if (AttachedItem != nullptr && AttachedItem->AttachmentRules == EWeaponAttachmentRule::InHands)
+		{
+			AttachedItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+			FVector NewLocation = GetActorLocation() + GetActorRightVector()*100;
+			NewLocation.Z = 60.f;
+			AttachedItem->SetActorLocation(NewLocation, true);
+
+			AttachedItem->SetActorEnableCollision(true);
+			AttachedItem->ChangeCollisionPresets(EWeaponAttachmentRule::NotInHands);
+		}
+		
+			//Attach new one
+			AttachedItem = Cast<AWeaponItem>(OtherActor);
+			AttachedItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("hand_weapon_s"));
+
+			AttachedItem->SetActorEnableCollision(false);
+			AttachedItem->ChangeCollisionPresets(EWeaponAttachmentRule::InHands);
+
+
 		HasWeapon = true;
 	}
 }
@@ -119,18 +134,6 @@ float ATestShooterCharacter::TakeDamage(float Damage, FDamageEvent const& Damage
 	}
 
 	return Damage;
-}
-
-
-void ATestShooterCharacter::OnResetVR()
-{
-	// If TestShooter is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in TestShooter.Build.cs is not automatically propagated
-	// and a linker error will result.
-	// You will need to either:
-	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
-	// or:
-	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
 void ATestShooterCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
