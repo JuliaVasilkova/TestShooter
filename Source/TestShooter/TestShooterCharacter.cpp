@@ -61,6 +61,7 @@ void ATestShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetActorLabel(FString("Main Shooter"));
 	Tags.Add(FName("Character"));
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATestShooterCharacter::OnCharacterBeginOverlap);
